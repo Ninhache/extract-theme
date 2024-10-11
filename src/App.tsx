@@ -1,5 +1,10 @@
 import "./App.css";
 
+import { useState } from "react";
+import { open } from "@tauri-apps/plugin-dialog";
+import { readFile } from "@tauri-apps/plugin-fs";
+import Button from "./components/button";
+
 // const matches = await getMatches();
 // console.log(matches);
 // if (matches.subcommand?.name === "image") {
@@ -14,6 +19,8 @@ import "./App.css";
 // }
 
 function App() {
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+
   // const [bla, setBla] = useState<string>();
   // console.log("hello world 1");
   // getMatches().then((matches) => {
@@ -25,10 +32,37 @@ function App() {
   //   // @ts-ignore
   //   setBla(`${args.image.value ?? "pas de valeur"}`);
   // });
+  const openFileDialog = async () => {
+    console.log("open");
+    // Ouvre le dialogue de fichiers pour sélectionner une image
+    const selectedFile = await open({
+      filters: [
+        {
+          name: "Image",
+          extensions: ["png", "jpg", "jpeg", "gif"],
+        },
+      ],
+    });
+
+    if (selectedFile) {
+      // Si un fichier est sélectionné, charge son contenu
+      const fileContent = await readFile(selectedFile);
+
+      // Convertit le contenu binaire en URL d'image utilisable par React
+      const blob = new Blob([new Uint8Array(fileContent)], {
+        type: "image/png",
+      });
+      const imageURL = URL.createObjectURL(blob);
+      setImageSrc(imageURL);
+    }
+  };
 
   return (
     <div className="container">
-      <h1 className="text-red-500">Open an image !</h1>
+      <Button variant="secondary" onClick={openFileDialog}>
+        Blabla:
+      </Button>
+      {imageSrc && <img src={imageSrc} alt="Selected" />}
     </div>
   );
 }
