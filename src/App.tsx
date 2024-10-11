@@ -34,7 +34,6 @@ function App() {
   // });
   const openFileDialog = async () => {
     console.log("open");
-    // Ouvre le dialogue de fichiers pour sélectionner une image
     const selectedFile = await open({
       filters: [
         {
@@ -45,10 +44,8 @@ function App() {
     });
 
     if (selectedFile) {
-      // Si un fichier est sélectionné, charge son contenu
       const fileContent = await readFile(selectedFile);
 
-      // Convertit le contenu binaire en URL d'image utilisable par React
       const blob = new Blob([new Uint8Array(fileContent)], {
         type: "image/png",
       });
@@ -59,7 +56,7 @@ function App() {
 
   return (
     <div className="container">
-      <Button variant="secondary" onClick={openFileDialog}>
+      <Button variant="primary" onClick={openFileDialog}>
         Blabla:
       </Button>
       {imageSrc && <img src={imageSrc} alt="Selected" />}
