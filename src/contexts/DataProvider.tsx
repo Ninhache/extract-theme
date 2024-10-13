@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 
-interface Marker {
+export interface Marker {
   index: number;
   x: number;
   y: number;
@@ -9,8 +9,8 @@ interface Marker {
 }
 
 interface DataContextProps {
-  markers: Marker[];
-  setMarkers: React.Dispatch<React.SetStateAction<Marker[]>>;
+  markers: Map<number, Marker>;
+  setMarkers: React.Dispatch<React.SetStateAction<Map<number, Marker>>>;
   addMarker: (x: number, y: number) => void;
   updateMarker: (
     index: number,
@@ -22,7 +22,7 @@ interface DataContextProps {
 }
 
 const DataContext = createContext<DataContextProps>({
-  markers: [],
+  markers: new Map(),
   setMarkers: () => {},
   addMarker: () => {},
   updateMarker: () => {},
@@ -33,14 +33,21 @@ interface ProviderProps {
 }
 
 const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
-  const [markers, setMarkers] = useState<Marker[]>([]);
+  const [markers, setMarkers] = useState<Map<number, Marker>>(new Map());
 
   const addMarker = (x: number, y: number) => {
-    console.log("markers", markers);
-    setMarkers((prevMarkers) => [
-      ...prevMarkers,
-      { index: prevMarkers.length, x, y, width: 25, height: 25 },
-    ]);
+    setMarkers((prevMarkers) => {
+      const newMarker = {
+        index: prevMarkers.size,
+        x,
+        y,
+        width: 25,
+        height: 25,
+      };
+      const newMap = new Map(prevMarkers);
+      newMap.set(newMarker.index, newMarker);
+      return newMap;
+    });
   };
 
   const updateMarker = (
@@ -50,13 +57,23 @@ const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
     newWidth: number,
     newHeight: number
   ) => {
-    setMarkers((prevMarkers) =>
-      prevMarkers.map((marker) =>
-        marker.index === index
-          ? { ...marker, x: newX, y: newY, width: newWidth, height: newHeight }
-          : marker
-      )
-    );
+    setMarkers((prevMarkers) => {
+      if (!prevMarkers.has(index)) {
+        return prevMarkers;
+      }
+
+      const updatedMarker = {
+        index: index,
+        x: newX,
+        y: newY,
+        width: newWidth,
+        height: newHeight,
+      };
+
+      const newMap = new Map(prevMarkers);
+      newMap.set(index, updatedMarker);
+      return newMap;
+    });
   };
 
   return (

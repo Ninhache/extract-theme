@@ -17,7 +17,7 @@ type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-} & React.HTMLAttributes<HTMLButtonElement>;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const ButtonStyles: Record<ButtonVariant, ClassNameValue> = {
   primary: "bg-primary text-primary-foreground shadow hover:bg-primary/90",

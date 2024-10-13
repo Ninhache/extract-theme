@@ -1,6 +1,7 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import { Group, Image as KonvaImage, Layer, Rect, Stage } from "react-konva";
-import useImage from "use-image";
+
+import { useRealImage } from "./@types/misc";
 import { useData } from "./contexts/DataProvider";
 
 interface KonvasProps {
@@ -8,7 +9,7 @@ interface KonvasProps {
 }
 
 function Konvas({ imageSrc }: KonvasProps): JSX.Element {
-  const [image] = useImage(imageSrc);
+  const [image] = useRealImage(imageSrc);
   const { markers, addMarker } = useData();
 
   if (!image) {
@@ -34,7 +35,7 @@ function Konvas({ imageSrc }: KonvasProps): JSX.Element {
   console.log("gaga", markers);
 
   return (
-    <div>
+    <>
       <Stage
         width={image?.width}
         height={image?.height}
@@ -43,9 +44,9 @@ function Konvas({ imageSrc }: KonvasProps): JSX.Element {
         <Layer>
           <Group onClick={handleGroupClick}>
             <KonvaImage image={image} />
-            {markers.map((marker) => (
+            {Array.from(markers.entries()).map(([index, marker]) => (
               <Rect
-                key={marker.index}
+                key={index}
                 x={marker.x}
                 y={marker.y}
                 width={marker.width}
@@ -57,7 +58,7 @@ function Konvas({ imageSrc }: KonvasProps): JSX.Element {
           </Group>
         </Layer>
       </Stage>
-    </div>
+    </>
   );
 }
 
