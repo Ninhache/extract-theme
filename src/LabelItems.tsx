@@ -8,7 +8,7 @@ interface LabelItemProps {
 }
 
 function LabelItem({ marker }: LabelItemProps): JSX.Element {
-  const { index, x, y, width, height } = marker;
+  const { index, label, x, y, width, height } = marker;
   const { updateMarker } = useData();
 
   return (
@@ -17,7 +17,7 @@ function LabelItem({ marker }: LabelItemProps): JSX.Element {
         <div className="w-8 text-black/50">{index} - </div>
         <Input
           type="text"
-          defaultValue={`label ??`}
+          defaultValue={label}
           className="mb-2"
           placeholder="Label text"
         />
@@ -30,7 +30,9 @@ function LabelItem({ marker }: LabelItemProps): JSX.Element {
           <NumberInput
             min={0}
             value={x}
-            onValueChange={(e) => updateMarker(index, e || 0, y, width, height)}
+            onValueChange={(e) =>
+              updateMarker(index, label, e || 0, y, width, height)
+            }
           />
         </div>
         <div className="flex items-center space-x-2">
@@ -40,7 +42,9 @@ function LabelItem({ marker }: LabelItemProps): JSX.Element {
           <NumberInput
             min={0}
             value={y}
-            onValueChange={(e) => updateMarker(index, x, e || 0, width, height)}
+            onValueChange={(e) =>
+              updateMarker(index, label, x, e || 0, width, height)
+            }
           />
         </div>
         <div className="flex items-center space-x-2">
@@ -50,7 +54,9 @@ function LabelItem({ marker }: LabelItemProps): JSX.Element {
           <NumberInput
             min={0}
             value={width}
-            onValueChange={(e) => updateMarker(index, x, y, e || 0, height)}
+            onValueChange={(e) =>
+              updateMarker(index, label, x, y, e || 0, height)
+            }
           />
         </div>
         <div className="flex items-center space-x-2">
@@ -60,7 +66,9 @@ function LabelItem({ marker }: LabelItemProps): JSX.Element {
           <NumberInput
             min={0}
             value={height}
-            onValueChange={(e) => updateMarker(index, x, y, width, e || 0)}
+            onValueChange={(e) =>
+              updateMarker(index, label, x, y, width, e || 0)
+            }
           />
         </div>
       </div>

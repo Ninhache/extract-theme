@@ -23,7 +23,7 @@ export interface NumberInputProps
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
   (
     {
-      stepper,
+      stepper = 1,
       thousandSeparator,
       placeholder,
       defaultValue,
@@ -45,19 +45,29 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       controlledValue ?? defaultValue
     );
 
-    const handleIncrement = useCallback(() => {
-      setValue((prev) =>
-        prev === undefined ? stepper ?? 1 : Math.min(prev + (stepper ?? 1), max)
-      );
-    }, [stepper, max]);
+    const handleIncrement = useCallback(
+      (shiftPressed: boolean) => {
+        const incrementStep = shiftPressed ? 5 : stepper;
+        setValue((prev) =>
+          prev === undefined
+            ? incrementStep
+            : Math.min(prev + incrementStep, max)
+        );
+      },
+      [stepper, max]
+    );
 
-    const handleDecrement = useCallback(() => {
-      setValue((prev) =>
-        prev === undefined
-          ? -(stepper ?? 1)
-          : Math.max(prev - (stepper ?? 1), min)
-      );
-    }, [stepper, min]);
+    const handleDecrement = useCallback(
+      (shiftPressed: boolean) => {
+        const decrementStep = shiftPressed ? 5 : stepper;
+        setValue((prev) =>
+          prev === undefined
+            ? -decrementStep
+            : Math.max(prev - decrementStep, min)
+        );
+      },
+      [stepper, min]
+    );
 
     useEffect(() => {
       const handleKeyDown = (e: KeyboardEvent) => {
@@ -65,10 +75,11 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
           document.activeElement ===
           (combinedRef as React.RefObject<HTMLInputElement>).current
         ) {
+          const shiftPressed = e.shiftKey;
           if (e.key === "ArrowUp") {
-            handleIncrement();
+            handleIncrement(shiftPressed);
           } else if (e.key === "ArrowDown") {
-            handleDecrement();
+            handleDecrement(shiftPressed);
           }
         }
       };
@@ -111,6 +122,15 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       }
     };
 
+    const handleButtonClick = (increment: boolean) => (e: React.MouseEvent) => {
+      const shiftPressed = e.shiftKey;
+      if (increment) {
+        handleIncrement(shiftPressed);
+      } else {
+        handleDecrement(shiftPressed);
+      }
+    };
+
     return (
       <div className="flex items-center">
         <NumericFormat
@@ -137,7 +157,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             aria-label="Increase value"
             className="px-2 h-5 rounded-l-none rounded-br-none border-input border-l-0 border-b-[0.5px] focus-visible:relative"
             variant="outline"
-            onClick={handleIncrement}
+            onClick={handleButtonClick(true)}
             disabled={value === max}
           >
             <ChevronUp size={15} />
@@ -146,7 +166,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             aria-label="Decrease value"
             className="px-2 h-5 rounded-l-none rounded-tr-none border-input border-l-0 border-t-[0.5px] focus-visible:relative"
             variant="outline"
-            onClick={handleDecrement}
+            onClick={handleButtonClick(false)}
             disabled={value === min}
           >
             <ChevronDown size={15} />

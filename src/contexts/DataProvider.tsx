@@ -2,6 +2,7 @@ import React, { createContext, ReactNode, useContext, useState } from "react";
 
 export interface Marker {
   index: number;
+  label: string;
   x: number;
   y: number;
   width: number;
@@ -14,6 +15,7 @@ interface DataContextProps {
   addMarker: (x: number, y: number) => void;
   updateMarker: (
     index: number,
+    label: string,
     newX: number,
     newY: number,
     newWidth: number,
@@ -39,6 +41,7 @@ const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
     setMarkers((prevMarkers) => {
       const newMarker = {
         index: prevMarkers.size,
+        label: "[NO_VALUE]",
         x,
         y,
         width: 25,
@@ -52,6 +55,7 @@ const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const updateMarker = (
     index: number,
+    label: string,
     newX: number,
     newY: number,
     newWidth: number,
@@ -64,6 +68,7 @@ const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
 
       const updatedMarker = {
         index: index,
+        label: label,
         x: newX,
         y: newY,
         width: newWidth,
