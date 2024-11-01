@@ -1,5 +1,4 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
-import { useRealImage } from "../@types/misc";
 
 interface ImageState {
   imageSrc: null | string;

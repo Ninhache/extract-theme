@@ -13,7 +13,7 @@ export const useVirtualScroll = (
     const container = containerRef.current;
     if (container) {
       const scrollTop = container.scrollTop;
-      const visibleHeight = container.clientHeight;
+      // const visibleHeight = container.clientHeight;
       const calculatedStartIndex = Math.floor(scrollTop / itemHeight);
       setStartIndex(calculatedStartIndex);
     }
