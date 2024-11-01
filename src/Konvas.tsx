@@ -1,6 +1,8 @@
 import { KonvaEventObject } from "konva/lib/Node";
 import { Group, Image as KonvaImage, Layer, Rect, Stage } from "react-konva";
 
+import Konva from "konva";
+import { useEffect, useRef } from "react";
 import { useRealImage } from "./@types/misc";
 import { useData } from "./contexts/DataProvider";
 
@@ -11,6 +13,13 @@ interface KonvasProps {
 function Konvas({ imageSrc }: KonvasProps): JSX.Element {
   const [image] = useRealImage(imageSrc);
   const { markers, addMarker } = useData();
+  const layerRef = useRef<Konva.Layer | null>(null);
+
+  useEffect(() => {
+    if (layerRef.current) {
+      layerRef.current.getLayer().batchDraw();
+    }
+  }, [markers]);
 
   if (!image) {
     return <div>Loading...</div>;
@@ -20,45 +29,40 @@ function Konvas({ imageSrc }: KonvasProps): JSX.Element {
     const group = e.target.getStage();
     if (group) {
       const relativePos = group.getRelativePointerPosition();
-      if (!relativePos) {
-        console.error("Relative position is null");
-      } else {
+      if (relativePos) {
         const { x, y } = relativePos;
-        console.error("Relative position is not null");
         addMarker(x, y);
+      } else {
+        console.error("Relative position is null");
       }
     } else {
       console.error("Group is missing!");
     }
   };
 
-  console.log("gaga", markers);
-
   return (
-    <>
-      <Stage
-        width={image?.width}
-        height={image?.height}
-        style={{ border: "1px solid black" }}
-      >
-        <Layer>
-          <Group onClick={handleGroupClick}>
-            <KonvaImage image={image} />
-            {Array.from(markers.entries()).map(([index, marker]) => (
-              <Rect
-                key={index}
-                x={marker.x}
-                y={marker.y}
-                width={marker.width}
-                height={marker.height}
-                stroke="red"
-                strokeWidth={2}
-              />
-            ))}
-          </Group>
-        </Layer>
-      </Stage>
-    </>
+    <Stage
+      width={image.width}
+      height={image.height}
+      style={{ border: "1px solid black" }}
+    >
+      <Layer ref={layerRef}>
+        <Group onClick={handleGroupClick}>
+          <KonvaImage image={image} />
+          {Array.from(markers.values()).map((marker, index) => (
+            <Rect
+              key={index}
+              x={marker.x}
+              y={marker.y}
+              width={marker.width}
+              height={marker.height}
+              stroke="red"
+              strokeWidth={2}
+            />
+          ))}
+        </Group>
+      </Layer>
+    </Stage>
   );
 }
 
