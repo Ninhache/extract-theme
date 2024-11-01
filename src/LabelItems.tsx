@@ -8,13 +8,12 @@ interface LabelItemProps {
 }
 
 function LabelItem({ marker }: LabelItemProps): JSX.Element {
-  const { index, label, x, y, width, height } = marker;
+  const { id: index, label, x, y, width, height } = marker;
   const { updateMarker } = useData();
 
   return (
     <div className="mb-4 p-4 bg-white rounded-lg shadow-sm">
       <div className="flex items-center">
-        <div className="w-8 text-black/50">{index} - </div>
         <Input
           type="text"
           defaultValue={label}
