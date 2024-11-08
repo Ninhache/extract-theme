@@ -1,33 +1,39 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
-export const useVirtualScroll = (
-  items: any[],
+interface VirtualScrollResult<T> {
+  visibleItems: T[];
+  containerRef: React.RefObject<HTMLDivElement>;
+  handleScroll: () => void;
+  startIndex: number;
+}
+
+function useVirtualScroll<T>(
+  items: T[],
   itemHeight: number,
   itemsPerBatch: number
-) => {
-  const [visibleItems, setVisibleItems] = useState<any[]>([]);
+): VirtualScrollResult<T> {
   const [startIndex, setStartIndex] = useState(0);
+  const [visibleItems, setVisibleItems] = useState<T[]>(
+    items.slice(0, itemsPerBatch)
+  );
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleScroll = () => {
-    const container = containerRef.current;
-    if (container) {
-      const scrollTop = container.scrollTop;
-      // const visibleHeight = container.clientHeight;
-      const calculatedStartIndex = Math.floor(scrollTop / itemHeight);
-      setStartIndex(calculatedStartIndex);
+  const handleScroll = useCallback(() => {
+    if (containerRef.current) {
+      const scrollTop = containerRef.current.scrollTop;
+      const newStartIndex = Math.floor(scrollTop / itemHeight);
+
+      if (newStartIndex !== startIndex) {
+        setStartIndex(newStartIndex);
+      }
     }
-  };
+  }, [itemHeight, startIndex]);
 
   useEffect(() => {
-    const endIndex = Math.min(startIndex + itemsPerBatch, items.length);
-    setVisibleItems(items.slice(startIndex, endIndex));
-  }, [startIndex, items]);
+    setVisibleItems(items.slice(startIndex, startIndex + itemsPerBatch));
+  }, [startIndex, items, itemsPerBatch]);
 
-  return {
-    visibleItems,
-    containerRef,
-    handleScroll,
-    startIndex,
-  };
-};
+  return { visibleItems, containerRef, handleScroll, startIndex };
+}
+
+export default useVirtualScroll;
