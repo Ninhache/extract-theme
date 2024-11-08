@@ -7,6 +7,7 @@
     "core:default",
     "shell:allow-open",
     "cli:default",
-    "fs:read-all"
+    "fs:read-all",
+    "fs:write-all"
   ]
 }

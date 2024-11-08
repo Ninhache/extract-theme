@@ -1,4 +1,5 @@
-import { open } from "@tauri-apps/plugin-dialog";
+import { open, save } from "@tauri-apps/plugin-dialog";
+import { writeTextFile } from "@tauri-apps/plugin-fs";
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -15,6 +16,7 @@ const FilterExtensions: Record<FilterName, string[]> = {
   Image: ["png"], // "jpg", "jpeg", "gif" // In the App, we're only handling png
 };
 
+// I'm using tauri V2, I want now to save a file, give me an equivalent
 export async function openFile(...filters: FilterName[]) {
   const mappedFilters = filters.map((filter) => ({
     name: filter,
@@ -24,6 +26,26 @@ export async function openFile(...filters: FilterName[]) {
   return await open({
     filters: mappedFilters,
   });
+}
+
+export async function saveFile(
+  defaultName: string,
+  content: string,
+  ...filters: FilterName[]
+) {
+  const mappedFilters = filters.map((filter) => ({
+    name: filter,
+    extensions: FilterExtensions[filter],
+  }));
+
+  const filePath = await save({
+    defaultPath: defaultName,
+    filters: mappedFilters,
+  });
+
+  if (filePath) {
+    await writeTextFile(filePath, content);
+  }
 }
 
 export function createBlobURL(
