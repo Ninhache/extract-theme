@@ -6,6 +6,7 @@ import { useImage } from "./contexts/ImageProvider";
 import LeftSide from "./LeftSide";
 import { createBlobURL, openFile } from "./lib/utils";
 import { DataContextProvider } from "./contexts/DataProvider";
+import Konvas from "./Konvas";
 
 function App() {
   const { imageSrc, setImageState } = useImage();
@@ -30,7 +31,10 @@ function App() {
         </Button>
       ) : (
         <DataContextProvider>
-          <LeftSide imageSrc={imageSrc} />
+          <div className="flex overflow-hidden w-screen h-screen">
+            <LeftSide imageSrc={imageSrc} />
+            <Konvas imageSrc={imageSrc} />
+          </div>
         </DataContextProvider>
       )}
     </div>

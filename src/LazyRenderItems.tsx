@@ -1,51 +1,20 @@
-import React from "react";
-import { useVirtualScroll } from "./useVirtualScroll";
-import { Marker } from "./contexts/DataProvider";
+import React, { useMemo } from "react";
 import LabelItem from "./LabelItems";
 
-interface LazyRenderItemsProps {
-  items: Marker[];
-}
+import { useData } from "./contexts/DataProvider";
 
-const LazyRenderItems: React.FC<LazyRenderItemsProps> = ({ items }) => {
-  const itemHeight = 170;
-  const itemsPerBatch = 10;
+const LazyRenderItems: React.FC<{}> = ({}) => {
+  const { markers } = useData();
 
-  const { visibleItems, containerRef, handleScroll, startIndex } =
-    useVirtualScroll(items, itemHeight, itemsPerBatch);
+  const memoizedArray = useMemo(() => {
+    return Array.from(markers.values());
+  }, [markers]);
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        height: "800px",
-        overflowY: "scroll",
-        // border: "1px solid #ccc",
-        position: "relative",
-      }}
-      onScroll={handleScroll}
-    >
-      <div
-        style={{
-          height: `${items.length * itemHeight}px`,
-          position: "relative",
-        }}
-      >
-        {visibleItems.map((marker, index) => (
-          <div
-            key={marker.id}
-            style={{
-              height: `${itemHeight}px`,
-              position: "absolute",
-              top: `${(startIndex + index) * itemHeight}px`,
-              width: "100%",
-              padding: "10px",
-            }}
-          >
-            <LabelItem marker={marker} />
-          </div>
-        ))}
-      </div>
+    <div className="overflow-y-auto">
+      {memoizedArray.map((marker, index) => (
+        <LabelItem key={index} marker={marker} />
+      ))}
     </div>
   );
 };
