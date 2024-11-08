@@ -12,7 +12,7 @@ interface KonvasProps {
 
 function Konvas({ imageSrc }: KonvasProps): JSX.Element {
   const [image] = useRealImage(imageSrc);
-  const { markers, addMarker } = useData();
+  const { markers, addMarker, allVisible } = useData();
   const layerRef = useRef<Konva.Layer | null>(null);
 
   useEffect(() => {
@@ -44,22 +44,25 @@ function Konvas({ imageSrc }: KonvasProps): JSX.Element {
     <Stage
       width={image.width}
       height={image.height}
-      style={{ border: "1px solid black" }}
+      className="border border-black overflow-scroll"
     >
       <Layer ref={layerRef}>
         <Group onClick={handleGroupClick}>
           <KonvaImage image={image} />
-          {Array.from(markers.values()).map((marker, index) => (
-            <Rect
-              key={index}
-              x={marker.x}
-              y={marker.y}
-              width={marker.width}
-              height={marker.height}
-              stroke="red"
-              strokeWidth={2}
-            />
-          ))}
+          {allVisible &&
+            Array.from(markers.values())
+              .filter((marker) => marker.visible)
+              .map((marker, index) => (
+                <Rect
+                  key={index}
+                  x={marker.x}
+                  y={marker.y}
+                  width={marker.width}
+                  height={marker.height}
+                  stroke="red"
+                  strokeWidth={2}
+                />
+              ))}
         </Group>
       </Layer>
     </Stage>
