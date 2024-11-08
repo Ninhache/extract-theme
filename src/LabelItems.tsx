@@ -14,7 +14,6 @@ function LabelItem({ marker }: LabelItemProps): JSX.Element {
   const { id, label, x, y, width, height, visible } = marker;
   const { updateMarker, deleteMarker, allVisible } = useData();
 
-  // useEffect(() => {}, [markers]);
   const isVisible = allVisible && visible;
 
   return (

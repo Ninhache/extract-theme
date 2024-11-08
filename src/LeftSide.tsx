@@ -76,7 +76,6 @@ function LeftSide({ imageSrc }: LeftProps): JSX.Element {
     <div className="min-w-80 w-1/4 bg-primary/80 sticky left-0 z-10 p-2 overflow-y-scroll">
       <div className="grid grid-cols-2 gap-2 p-2">
         <Button variant="primary" onClick={openImageDialog}>
-          {/* <Image className="mr-2 h-4 w-4" /> */}
           <Download className="mr-2 h-4 w-4" />
           Open Image
         </Button>
