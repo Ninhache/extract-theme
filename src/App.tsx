@@ -24,14 +24,18 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="flex justify-center items-center bg-primary/20 w-screen h-screen">
       {!imageSrc ? (
-        <Button variant="primary" onClick={openFileDialog}>
+        <Button variant="primary" onClick={openFileDialog} className="relative">
+          <span className="absolute -top-1 -right-1 flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
+          </span>
           Select an image:
         </Button>
       ) : (
         <DataContextProvider>
-          <div className="flex overflow-hidden w-screen h-screen">
+          <div className="flex overflow-hidden h-full w-full">
             <LeftSide imageSrc={imageSrc} />
             <Konvas imageSrc={imageSrc} />
           </div>
