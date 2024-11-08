@@ -8,21 +8,19 @@ export interface Marker {
   y: number;
   width: number;
   height: number;
+  visible: boolean;
 }
 
 interface DataContextProps {
   markers: Map<string, Marker>;
   setMarkers: React.Dispatch<React.SetStateAction<Map<string, Marker>>>;
   addMarker: (x: number, y: number) => void;
-  updateMarker: (
-    id: string,
-    label: string,
-    newX: number,
-    newY: number,
-    newWidth: number,
-    newHeight: number
-  ) => void;
+  updateMarker: (id: string, field: keyof Marker, value: unknown) => void;
   loadJson: (json: string) => void;
+  allVisible: boolean;
+  setAllVisible: (visible: boolean) => void;
+  deleteMarker: (id: string) => void;
+  clearMarkers: () => void;
 }
 
 const DataContext = createContext<DataContextProps>({
@@ -31,6 +29,10 @@ const DataContext = createContext<DataContextProps>({
   addMarker: () => {},
   updateMarker: () => {},
   loadJson: () => {},
+  allVisible: true,
+  setAllVisible: () => {},
+  deleteMarker: () => {},
+  clearMarkers: () => {},
 });
 
 interface ProviderProps {
@@ -40,6 +42,7 @@ interface ProviderProps {
 const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
   const [markers, setMarkers] = useState<Map<string, Marker>>(new Map());
   const [lastMarkerId, setLastMarkerId] = useState<string | null>(null);
+  const [allVisible, setAllVisible] = useState<boolean>(true);
 
   const addMarker = (x: number, y: number) => {
     const id = uuidv4();
@@ -56,6 +59,7 @@ const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
         y,
         width,
         height,
+        visible: true,
       };
 
       const newMap = new Map(prevMarkers);
@@ -65,27 +69,17 @@ const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
     setLastMarkerId(id);
   };
 
-  const updateMarker = (
-    id: string,
-    newLabel: string,
-    newX: number,
-    newY: number,
-    newWidth: number,
-    newHeight: number
-  ) => {
+  const updateMarker = (id: string, field: keyof Marker, value: unknown) => {
     setMarkers((prevMarkers) => {
       if (!prevMarkers.has(id)) {
-        return prevMarkers;
+        throw Error(`Error for id [${id}] | doesnt exist in map`);
       }
 
+      const toUpdate = prevMarkers.get(id) as Marker;
       const updatedMarker = {
-        id,
-        label: newLabel,
-        x: newX,
-        y: newY,
-        width: newWidth,
-        height: newHeight,
-      };
+        ...toUpdate,
+        [field]: value,
+      } satisfies Marker;
 
       const newMap = new Map(prevMarkers);
       newMap.set(id, updatedMarker);
@@ -108,6 +102,7 @@ const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
               y: item.y ?? 0,
               width: item.width ?? 25,
               height: item.height ?? 25,
+              visible: true,
             };
             newMap.set(id, newMarker);
           });
@@ -122,9 +117,33 @@ const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
     }
   };
 
+  const deleteMarker = (id: string) => {
+    setMarkers((prevMarkers) => {
+      prevMarkers.delete(id);
+
+      return new Map(prevMarkers);
+    });
+  };
+
+  const clearMarkers = () => {
+    setMarkers((_) => {
+      return new Map();
+    });
+  };
+
   return (
     <DataContext.Provider
-      value={{ markers, setMarkers, addMarker, updateMarker, loadJson }}
+      value={{
+        markers,
+        setMarkers,
+        addMarker,
+        updateMarker,
+        loadJson,
+        allVisible,
+        setAllVisible,
+        clearMarkers,
+        deleteMarker,
+      }}
     >
       {children}
     </DataContext.Provider>
