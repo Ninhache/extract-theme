@@ -15,7 +15,11 @@ interface DataContextProps {
   markers: Map<string, Marker>;
   setMarkers: React.Dispatch<React.SetStateAction<Map<string, Marker>>>;
   addMarker: (x: number, y: number) => void;
-  updateMarker: (id: string, field: keyof Marker, value: unknown) => void;
+  updateMarker: <T extends keyof Marker>(
+    id: string,
+    field: T,
+    value: Marker[T]
+  ) => void;
   loadJson: (json: string) => void;
   allVisible: boolean;
   setAllVisible: (visible: boolean) => void;
@@ -69,7 +73,11 @@ const DataContextProvider: React.FC<ProviderProps> = ({ children }) => {
     setLastMarkerId(id);
   };
 
-  const updateMarker = (id: string, field: keyof Marker, value: unknown) => {
+  const updateMarker = <T extends keyof Marker>(
+    id: string,
+    field: T,
+    value: Marker[T]
+  ) => {
     setMarkers((prevMarkers) => {
       if (!prevMarkers.has(id)) {
         throw Error(`Error for id [${id}] | doesnt exist in map`);

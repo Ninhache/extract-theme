@@ -44,7 +44,7 @@ function Konvas({ imageSrc }: KonvasProps): JSX.Element {
     <Stage
       width={image.width}
       height={image.height}
-      className="border border-black overflow-scroll"
+      className="overflow-scroll"
     >
       <Layer ref={layerRef}>
         <Group onClick={handleGroupClick}>
