@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 
 interface ImageState {
+  imageName: string;
   imageSrc: null | string;
 }
 
@@ -10,6 +11,7 @@ interface ImageContextProps extends ImageState {
 
 const ImageContext = createContext<ImageContextProps>({
   imageSrc: null,
+  imageName: "",
   setImageState: () => {},
 });
 
@@ -19,6 +21,7 @@ interface ProviderProps {
 
 const ImageContextProvider: React.FC<ProviderProps> = ({ children }) => {
   const [imageState, setImageState] = useState<ImageState>({
+    imageName: "",
     imageSrc: null,
   });
 

@@ -3,6 +3,7 @@
   "productName": "extract-theme",
   "version": "0.1.0",
   "identifier": "com.extract-theme.app",
+
   "build": {
     "beforeDevCommand": "yarn dev",
     "devUrl": "http://localhost:1420",
@@ -10,6 +11,7 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "title": "extract-theme",

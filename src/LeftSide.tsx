@@ -1,6 +1,6 @@
 import { readFile } from "@tauri-apps/plugin-fs";
 import { Download, EyeIcon, EyeOff, Upload } from "lucide-react";
-import { useEffect } from "react";
+
 import Button from "./components/button";
 import { Separator } from "./components/separator";
 import { useData } from "./contexts/DataProvider";
@@ -13,28 +13,24 @@ import {
   saveFile,
 } from "./lib/utils";
 
-interface LeftProps {
-  imageSrc: string;
-}
-
-function LeftSide({ imageSrc }: LeftProps): JSX.Element {
-  const { setImageState } = useImage();
+function LeftSide({}): JSX.Element {
+  const { setImageState, imageName } = useImage();
   const { markers, loadJson, clearMarkers, setAllVisible, allVisible } =
     useData();
 
-  useEffect(() => {
-    if (imageSrc) {
-      setImageState({ imageSrc: imageSrc });
-    }
-  }, [imageSrc]);
-
   const openImageDialog = async () => {
-    const selectedImage = await openFile("Image", "All");
-
-    if (selectedImage) {
-      const fileContent = await readFile(selectedImage);
+    const selectedFile = await openFile("Image", "All");
+    // console.log("selectedFile", selectedFile);
+    if (selectedFile) {
+      const fileContent = await readFile(selectedFile);
       const imageURL = createBlobURL(fileContent, "image/png");
+
+      // @ts-ignore
+      const splittedName = selectedFile.split(window.__TAURI__.path.sep());
+      const imageName = splittedName[splittedName.length - 1];
+
       setImageState({
+        imageName: imageName,
         imageSrc: imageURL,
       });
       clearMarkers();
@@ -62,8 +58,6 @@ function LeftSide({ imageSrc }: LeftProps): JSX.Element {
       };
     });
 
-    console.log("simplifiedJson", simplifiedJson);
-
     await saveFile(
       "Export JSON",
       JSON.stringify(simplifiedJson),
@@ -74,6 +68,9 @@ function LeftSide({ imageSrc }: LeftProps): JSX.Element {
 
   return (
     <div className="min-w-80 w-1/4 bg-primary/80 sticky left-0 z-10 p-2 overflow-y-scroll">
+      <div className="text-primary-foreground text-md text-center truncate text-ellipsis">
+        {imageName}
+      </div>
       <div className="grid grid-cols-2 gap-2 p-2">
         <Button variant="primary" onClick={openImageDialog}>
           <Download className="mr-2 h-4 w-4" />

@@ -2,24 +2,30 @@ import "./App.css";
 
 import { readFile } from "@tauri-apps/plugin-fs";
 import Button from "./components/button";
+import { DataContextProvider } from "./contexts/DataProvider";
 import { useImage } from "./contexts/ImageProvider";
 import LeftSide from "./LeftSide";
 import { createBlobURL, openFile } from "./lib/utils";
-import { DataContextProvider } from "./contexts/DataProvider";
 
-import Konvas from "./Konvas";
+// import path from "path";
 import Balancer from "react-wrap-balancer";
+import Konvas from "./Konvas";
 
 function App() {
   const { imageSrc, setImageState } = useImage();
 
   const openFileDialog = async () => {
     const selectedFile = await openFile("Image", "All");
-
     if (selectedFile) {
       const fileContent = await readFile(selectedFile);
       const imageURL = createBlobURL(fileContent, "image/png");
+
+      // @ts-ignore
+      const splittedName = selectedFile.split(window.__TAURI__.path.sep());
+      const imageName = splittedName[splittedName.length - 1];
+
       setImageState({
+        imageName: imageName,
         imageSrc: imageURL,
       });
     }
@@ -47,7 +53,7 @@ function App() {
       ) : (
         <DataContextProvider>
           <div className="flex overflow-hidden h-full w-full">
-            <LeftSide imageSrc={imageSrc} />
+            <LeftSide />
             <Konvas imageSrc={imageSrc} />
           </div>
         </DataContextProvider>
